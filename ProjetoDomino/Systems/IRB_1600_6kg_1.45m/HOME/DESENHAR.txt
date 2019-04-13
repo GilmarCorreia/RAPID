@@ -1,0 +1,69 @@
+MODULE DESENHAR
+    CONST robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    
+    VAR num pecaSize := 60;
+    VAR num aproxZ := 50;
+    VAR zonedata zone := fine; 
+    VAR speeddata vel := v200;
+    
+    VAR pos centroD;
+    VAR pos centroE;
+    
+    PROC desenhaRetangulo(bool vertical)
+        VAR num matrizRotacao{10,3};
+        VAR num i;
+        VAR num j;
+        
+        matrizRotacao:= [[0,-pecaSize/2,aproxZ],[0,-pecaSize/2,0],[0,pecaSize/2,0],[pecaSize,pecaSize/2,0],[pecaSize,-pecaSize/2,0],
+                         [-pecaSize,-pecaSize/2,0], [-pecaSize,pecaSize/2,0], [0,pecaSize/2,0], [0,pecaSize/2,aproxZ], [0,0,aproxZ]];
+        
+        IF vertical THEN
+            i := 1;
+            j := 2;
+        ELSE
+            i := 2;
+            j := 1;
+        ENDIF
+            
+        FOR k FROM 1 TO 10 DO
+            MoveL Offs(Offs(pHome,centroD.x,centroD.y,centroD.z),matrizRotacao{k,i},matrizRotacao{k,j},matrizRotacao{k,3}), vel, zone, tool0;
+        ENDFOR
+
+        ! Parte do código que vai atualizar os centros
+        IF vertical THEN
+            IF centroD.y = centroE.y THEN
+                centroD.y := centroD.y -(3/2 * pecaSize);
+                centroE.y := centroE.y + (3/2 * pecaSize);
+            ELSE
+                
+            ENDIF
+            
+        ELSE
+            IF centroD.y = centroE.y THEN
+                centroD.y := centroD.y - (2  * pecaSize);
+                centroE.y := centroE.y + (2  * pecaSize);
+            ELSE
+                
+            ENDIF
+        ENDIF
+        
+        centroD.x := 0; 
+        centroD.z := 0;
+        centroE.x := 0; 
+        centroE.z := 0;
+
+        
+    ENDPROC
+    
+    PROC desenhaPontos(num n, num m)
+        
+    ENDPROC
+    
+    PROC desenhaPeca(num n, num m)
+        
+        MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
+        desenhaRetangulo n=m;
+        MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
+    ENDPROC
+    
+ENDMODULE
