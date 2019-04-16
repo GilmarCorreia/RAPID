@@ -1,5 +1,5 @@
 MODULE TELA
-
+ 
     CONST num qtdPecas:=28;
     VAR num pecasJogadores{qtdPecas,2};
     VAR num pecasJogador1{qtdPecas};
@@ -45,7 +45,7 @@ MODULE TELA
         nSeed:=((nMultiplier*Abs(nSeed))+nIncrement) MOD nModulus;
 
         RETURN Round(((nSeed/nModulus)*27)+1);
-    ENDFUNC
+    ENDFUNC 
 
     !! =======================================================================================================================
     !! =======================================================================================================================
@@ -156,7 +156,6 @@ MODULE TELA
             ENDIF
 
             ! VERIFICA SE É POSSÍVEL JOGAR A PEÇA DESEJADA, SE NÃO REALIZA A COMPRA DE PEÇAS
-
             IF pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaD OR pecasJogo{pecasJogadores{escolhaPlayer{player},player},2}=pecaD THEN
                 IF ((pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaE OR pecasJogo{pecasJogadores{escolhaPlayer{player},player},2}=pecaE) AND (player=1)) THEN
                     TPReadFK escolhaLado,"Deseja jogar para qual lado ","Direita: "+NumToStr(pecaD,0),"Esquerda: "+NumToStr(pecaE,0),stEmpty,stEmpty,stEmpty;
@@ -310,8 +309,8 @@ MODULE TELA
         quemJogaPrimeiro:=quemJogaPrimeiro XOR TRUE;
 
         !Carrega classe de desenho
-        StartLoad\Dynamic,diskhome\File:="DESENHAR.MOD",load2;
-        WaitLoad load2;
+        !StartLoad\Dynamic,diskhome\File:="DESENHAR.MOD",load2;
+        !WaitLoad load2;
 
         pecaD:=pecasJogo{maior,1};
         pecaE:=pecasJogo{maior,2};
@@ -361,7 +360,7 @@ MODULE TELA
 
         ENDWHILE
 
-        UnLoad diskhome\File:="DESENHAR.MOD";
+        !UnLoad diskhome\File:="DESENHAR.MOD";
 
         WaitTime tempoDelay;
 

@@ -1,16 +1,15 @@
 MODULE DESENHAR
-    CONST robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    !CONST robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
     
-    VAR num pecaSize := 60;
-    VAR num raio:=5;
-    VAR num aproxZ := 50;
+    VAR num pecaSize := 25;
+    VAR num raio:=2;
+    VAR num aproxZ := 25;
     VAR zonedata zone := fine; 
-    VAR speeddata vel := v1000;
+    VAR speeddata vel := v50;
     VAR num desloc := 2;
-     
-     
-    ! LOUSA 115 cm por 85cm
     
+    ! LOUSA 115 cm por 85cm
+
     VAR pos centroD;
     VAR pos centroE;
     VAR pos centro;
@@ -93,6 +92,7 @@ MODULE DESENHAR
              PCenter:=Offs(PCenter,(-16.5+3*(i-1)+9*(k))*pecaSize/9,(-1.5-3*(j-1)+4.5)*pecaSize/9,0);
          ENDIF 
          PCenter := Offs(PCenter,0,raio,0);
+         MoveL Offs(PCenter,0,0,aproxZ),vel,zone,tool0;
          MoveL PCenter,vel,zone,tool0;
          MoveC Offs(PCenter,-raio,-raio,0), Offs(PCenter,0,-2*raio,0),vel,zone,tool0;
          MoveC Offs(PCenter,raio,-raio,0), PCenter,vel,zone,tool0;
@@ -136,12 +136,12 @@ MODULE DESENHAR
     
     PROC desenhaPeca(num n, num m, bool direcaoJogada)
         
-        MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
+        !MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
         centroOficial n=m, direcaoJogada;
         desenhaRetangulo n=m;
         desenhaPontos m,n, direcaoJogada;
         offsCentro n=m, direcaoJogada;
-        MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
+        !MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
     ENDPROC
     
 ENDMODULE
