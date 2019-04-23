@@ -1,12 +1,19 @@
 MODULE TELA
- 
+   
+    ! ================== INTEGRANTES ==================
+    ! Nomes:
+    ! Ana Laura Belotto Claudio - R.A: 11035315
+    ! Gilmar Correia Jeronimo - R.A: 11014515
+    ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
+    ! =================================================
+    
     CONST num qtdPecas:=28;
     VAR num pecasJogadores{qtdPecas,2};
     VAR num pecasJogador1{qtdPecas};
     VAR num pecasJogador2{qtdPecas};
     VAR num pecasJogo{qtdPecas,2};
     VAR num pecasCompra{qtdPecas,2};
-    VAR num pecasBaixadas:=1;
+    VAR num pecasCompradas:=14;
     VAR num maior:=-1;
 
     VAR bool quemJogaPrimeiro;
@@ -14,7 +21,8 @@ MODULE TELA
     VAR num qtdPecasPlayer{2};
     VAR num pecasNaMao{2};
     VAR num player;
-    VAR num vaiComprar;
+    VAR num vaiEscolherNovamente;
+    VAR bool vaiComprar;
     VAR bool direcaoJogada;
     !Se for true, jogou na direita, se for false, jogou na esquerda.
 
@@ -100,16 +108,35 @@ MODULE TELA
 
     PROC imprimePecas(num jogador,num qtdPecasPlayer,num delay)
 
+        VAR string str1 := "#P:";
+        VAR string cima := "   ";
+        VAR string str2 := "   ";
+        VAR string meio := "   ";
+        VAR string str3 := "   ";
+        VAR string baixo := "   ";
+        
         WaitTime delay;
         TPWrite " ";
-
+        
         FOR i FROM 1 TO qtdPecasPlayer DO
             IF pecasCompra{pecasJogadores{i,jogador},1}<>-2 THEN
-                TPWrite "Peça "+NumToStr(i,0)+"- J"+NumToStr(jogador,0)+" = "+NumToStr(pecasJogo{pecasJogadores{i,jogador},1},0)+"-"+NumToStr(pecasJogo{pecasJogadores{i,jogador},2},0);
+                str1 := str1 + " "+NumToStr(i,0) + "  ";
+                cima := cima +" _  ";
+                str2 := str2 + "|" + NumToStr(pecasJogo{pecasJogadores{i,jogador},1},0) + "| ";
+                meio := meio +"|-| ";
+                str3 := str3 + "|" + NumToStr(pecasJogo{pecasJogadores{i,jogador},2},0) + "| ";
+                baixo := baixo +" ¯  ";
             ENDIF
         ENDFOR
-
-        TPWrite " ";
+        
+        TPWrite "Peças do Jogador " + NumToStr(jogador,0);
+        TPWrite str1;
+        TPWrite cima;
+        TPWrite str2;
+        TPWrite meio;
+        TPWrite str3;
+        TPWrite baixo;
+        
         WaitTime delay;
 
     ENDPROC
@@ -118,14 +145,27 @@ MODULE TELA
 
         VAR NUM rand;
         VAR NUM escolhaLado;
+        VAR bool podeEscolher := FALSE;
 
         WHILE escolhaPlayer{player}>qtdPecasPlayer{player} DO
+            
+            ! VERIFICA SE O PLAYER POSSUI ALGUMA PEÇA QUE POSSA SER ENCAIXADO NO JOGO E ESCOLHE ELA CASO SEJA O COMPUTADOR
+            FOR peca FROM 1 TO qtdPecasPlayer{player} DO
+                IF ((pecasJogo{pecasJogadores{peca,player},1}=pecaD OR pecasJogo{pecasJogadores{peca,player},2}=pecaD) OR (pecasJogo{pecasJogadores{peca,player},1}=pecaE OR pecasJogo{pecasJogadores{peca,player},2}=pecaE)) AND pecasCompra{pecasJogadores{peca,player},1}<>-2 THEN
+                    podeEscolher := TRUE;
+                    IF player = 2 THEN
+                        escolhaPlayer{player}:=peca;
+                    ENDIF
+                ENDIF
+            ENDFOR
+                
             IF (player=1) THEN
-                WHILE escolhaPlayer{player}>qtdPecasPlayer{player} DO
-                    ! CÓDIGO PARA A PESSOA
-                    TPWrite "Sua vez";
-                    imprimePecas player,qtdPecasPlayer{player},1.5;
-
+                ! CÓDIGO PARA A PESSOA
+                TPWrite "Sua vez";
+                imprimePecas player,qtdPecasPlayer{player},1.5;
+                WaitTime 0.5;
+                
+                WHILE escolhaPlayer{player}>qtdPecasPlayer{player} AND podeEscolher DO
                     TPReadNum escolhaPlayer{player},"Selecione a Peça para Jogar";
                     IF escolhaPlayer{player}>qtdPecasPlayer{player} OR pecasCompra{pecasJogadores{escolhaPlayer{player},player},1}=-2 THEN
                         TPWrite "Número inválido, escolha novamente";
@@ -135,24 +175,17 @@ MODULE TELA
             ELSE
                 ! CÓDIGO PARA O COMPUTADOR
                 TPWrite "Vez do Computador";
-                !imprimePecas 2,qtdPecasPlayer{2},1.0;
+                imprimePecas player,qtdPecasPlayer{player},1.0;
                 WaitTime 0.5;
-
-
+            ENDIF
+            
+            !SE NÃO POSSUIR PEÇAS QUE POSSAM SER ESCOLHIDAS ENTÃO SE SELECIONA UMA PEÇA AUTOMATICAMENTE ERRADA, E ASSIM SE REALIZA A COMPRA DA PEÇA
+            IF (escolhaPlayer{player}>qtdPecasPlayer{player} OR pecasCompra{pecasJogadores{escolhaPlayer{player},player},1}=-2) AND (not podeEscolher) THEN
                 FOR peca FROM 1 TO qtdPecasPlayer{player} DO
-                    IF ((pecasJogo{pecasJogadores{peca,player},1}=pecaD OR pecasJogo{pecasJogadores{peca,player},2}=pecaD) OR (pecasJogo{pecasJogadores{peca,player},1}=pecaE OR pecasJogo{pecasJogadores{peca,player},2}=pecaE)) AND pecasCompra{pecasJogadores{peca,player},1}<>-2 THEN
+                    IF pecasCompra{pecasJogadores{peca,player},1}<>-2 THEN
                         escolhaPlayer{player}:=peca;
                     ENDIF
                 ENDFOR
-
-                IF escolhaPlayer{player}>qtdPecasPlayer{player} OR pecasCompra{pecasJogadores{escolhaPlayer{player},player},1}=-2 THEN
-                    FOR peca FROM 1 TO qtdPecasPlayer{player} DO
-                        IF pecasCompra{pecasJogadores{peca,player},1}<>-2 THEN
-                            escolhaPlayer{player}:=peca;
-                        ENDIF
-                    ENDFOR
-                ENDIF
-
             ENDIF
 
             ! VERIFICA SE É POSSÍVEL JOGAR A PEÇA DESEJADA, SE NÃO REALIZA A COMPRA DE PEÇAS
@@ -183,7 +216,6 @@ MODULE TELA
 
                     direcaoJogada:=TRUE;
                 ENDIF
-
             ELSEIF pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaE OR pecasJogo{pecasJogadores{escolhaPlayer{player},player},2}=pecaE THEN
 
                 IF pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaE THEN
@@ -195,17 +227,24 @@ MODULE TELA
 
             ELSE
                 IF player=1 THEN
-                    TPReadFK vaiComprar,"Peça inválida, escolha novamente ou compre uma peça","Escolher novamente","Comprar peca",stEmpty,stEmpty,stEmpty;
+                    IF podeEscolher THEN
+                        TPReadFK vaiEscolherNovamente,"Peça inválida, escolha novamente ou compre uma peça","Escolher novamente",stEmpty,stEmpty,stEmpty,stEmpty; 
+                    ELSE
+                        TPWrite "Não Possui Peças, Será realizado a compra automática.";
+                        WaitTime 1.0;
+                        vaiComprar:=TRUE;
+                    ENDIF  
                 ELSE
-                    vaiComprar:=2;
+                     vaiComprar:=TRUE;
                 ENDIF
-
-                IF vaiComprar=1 AND player=1 THEN
+                
+                IF vaiEscolherNovamente=1 AND player=1 THEN
                     escolhaPlayer{player}:=100;
                 ELSE
                     ! CRIAR CÓDIGO PARA COMPRAR PEÇA 
                     TPWrite "Vai Comprar";
-
+                    WaitTime tempoDelay;
+                    
                     rand:=Random();
 
                     WHILE pecasCompra{rand,1}=-1 OR pecasCompra{rand,1}=-2 DO
@@ -214,7 +253,11 @@ MODULE TELA
 
                     qtdPecasPlayer{player}:=qtdPecasPlayer{player}+1;
                     pecasJogadores{qtdPecasPlayer{player},player}:=rand;
-
+                    pecasCompradas := pecasCompradas + 1;
+                    IF player = 1 THEN
+                        TPWrite "Peça comprada: "+NumToStr(pecasJogo{rand,1},0)+"-"+NumToStr(pecasJogo{rand,2},0);
+                        WaitTime tempoDelay;
+                    ENDIF    
                 ENDIF
             ENDIF
         ENDWHILE
@@ -222,7 +265,7 @@ MODULE TELA
         WaitTime tempoDelay;
 
         !SE NÃO COMPRAR PEÇA
-        IF vaiComprar<>2 THEN
+        IF vaiComprar<>TRUE THEN
             IF direcaoJogada THEN
                 IF pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaD THEN
                     %"desenhaPeca"%pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},direcaoJogada;
@@ -242,7 +285,9 @@ MODULE TELA
         !qtdPecasPlayer{player}:=qtdPecasPlayer{player}-1;
 
         escolhaPlayer{player}:=100;
-        vaiComprar:=1;
+        vaiEscolherNovamente := 0; 
+        vaiComprar:=FALSE;
+ 
     ENDPROC
 
     PROC setarTela()
@@ -329,13 +374,15 @@ MODULE TELA
             pecasNaMao{jogador}:=qtdPecasPlayer{jogador}-j;
             j:=0;
         ENDFOR
-
+        
         WHILE ((pecasNaMao{1}>0) AND (pecasNaMao{2}>0)) DO
-            TPWrite "";
+            TPErase;
+            TPWrite ""; 
             TPWrite "====================================";
             TPWrite "============== PLACAR ==============";
             TPWrite "===== P1: "+NumToStr(pecasNaMao{1},0)+" ============ C2: "+NumToStr(pecasNaMao{2},0)+" =====";
             TPWrite "====================================";
+            TPWrite "Peças Em Jogo: "+NumToStr(pecasCompradas,0);
             TPWrite "";
 
             IF quemJogaPrimeiro THEN
@@ -349,15 +396,25 @@ MODULE TELA
             !Troca o jogador
             quemJogaPrimeiro:=quemJogaPrimeiro XOR TRUE;
 
-
-            FOR i FROM 1 TO qtdPecasPlayer{player} DO
-                IF pecasCompra{pecasJogadores{i,player},1}=-2 THEN
-                    j:=j+1;
+            !SE TODAS AS MINHAS PEÇAS FOREM COMPRADAS, ENTÃO O O SISTEMA ...
+            !SE AINDA HOUVER PEÇAS PARA COMPRAR ENTÃO É ANALISADO QUANTAS PEÇAS EXISTEM NA MÃO DE CADA JOGADOR;
+            IF pecasCompradas = 28 THEN
+                TPWrite "JOGO TRAVADO PELO JOGADOR "+NumToStr(player,0);
+                IF player = 1 THEN
+                    pecasNaMao{2} :=0;
+                ELSE
+                    pecasNaMao{1} :=0;
                 ENDIF
-            ENDFOR
-            pecasNaMao{player}:=qtdPecasPlayer{player}-j;
-            j:=0;
-
+            ELSE    
+                FOR i FROM 1 TO qtdPecasPlayer{player} DO
+                    IF pecasCompra{pecasJogadores{i,player},1}=-2 THEN
+                        j:=j+1;
+                    ENDIF
+                ENDFOR
+                pecasNaMao{player}:=qtdPecasPlayer{player}-j;
+                j:=0;
+            ENDIF
+            
         ENDWHILE
 
         !UnLoad diskhome\File:="DESENHAR.MOD";
@@ -366,7 +423,7 @@ MODULE TELA
 
         IF pecasNaMao{1}=0 THEN
             TPWrite "Parabéns! Você é o vencedor!";
-        ELSE
+        ELSEIF pecasNaMao{2}=0 THEN
             TPWrite "YOU LOSE! FATALITY! Computador ganhou!";
         ENDIF
 

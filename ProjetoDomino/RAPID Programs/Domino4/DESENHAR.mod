@@ -1,13 +1,20 @@
 MODULE DESENHAR
+
+    ! ================== INTEGRANTES ==================
+    ! Nomes:
+    ! Ana Laura Belotto Claudio - R.A: 11035315
+    ! Gilmar Correia Jeronimo - R.A: 11014515
+    ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
+    ! =================================================
+
     !CONST robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
-    
     VAR num pecaSize := 25;
     VAR num raio:=2;
     VAR num aproxZ := 25;
     VAR zonedata zone := fine; 
-    VAR speeddata vel := v50;
+    VAR speeddata vel := v200;
     VAR num desloc := 2;
-    
+    VAR num maxLinha:=100;
     ! LOUSA 115 cm por 85cm
 
     VAR pos centroD;
@@ -15,28 +22,92 @@ MODULE DESENHAR
     VAR pos centro;
     VAR robtarget PCenter;
     
-    PROC centroOficial(bool iguais, bool direcaoJogada)
-        IF iguais AND centroD <> centroE THEN
-            IF direcaoJogada THEN
-                centroD.y := centroD.y + (1/2)*pecaSize;
-            ELSE
-                centroE.y := centroE.y - (1/2)*pecaSize;
+    VAR bool primVezD:=TRUE;
+    VAR bool primVezE:=TRUE;
+        
+    
+    FUNC bool centroOficial(bool dobre,bool direcaoJogada)
+        
+        IF dobre AND centroD <> centroE THEN 
+            IF direcaoJogada THEN 
+                IF abs(centroD.y) < maxLinha AND primVezD THEN 
+                    centroD.y := centroD.y + (1/2)*pecaSize; 
+                ELSE 
+                    centroD.x := centroD.x - (1/2)*pecaSize; 
+                ENDIF 
+            ELSE 
+                IF abs(centroE.y) < maxLinha AND primVezE THEN 
+                    centroE.y := centroE.y - (1/2)*pecaSize; 
+                ELSE 
+                    centroE.x := centroE.x - (1/2)*pecaSize;
+                ENDIF 
             ENDIF
+        ENDIF 
+        
+              
+        IF direcaoJogada THEN 
+            centro.x := centroD.x; 
+            centro.y := centroD.y; 
+            centro.z := centroD.z; 
+        ELSE 
+            centro.x := centroE.x; 
+            centro.y := centroE.y; 
+            centro.z := centroE.z; 
+        ENDIF 
+
+        RETURN abs(centro.y) >= maxLinha OR (direcaoJogada AND (not primVezD)) OR ((not direcaoJogada) AND (not primVezE));
+    ENDFUNC
+    
+    FUNC bool naVertical(bool dobre,bool virado)
+        return virado XOR dobre;
+    ENDFUNC 
+    
+    PROC offsCentroVira(bool dobre,bool prevDobreD, bool prevDobreE)
+        
+        TPWrite "ESTÁ NA VERTICAL";
+        WaitTime 1.0;
+        
+        IF prevDobreD AND  primVezD THEN
+            TPWrite "DOBRE DIREITAAAA";
+            centro.x := centro.x + (1/2)*pecaSize;
+            centroD.x := centroD.x + (1/2)*pecaSize;
         ENDIF
         
-        IF direcaoJogada THEN
-            centro.x := centroD.x;
-            centro.y := centroD.y;
-            centro.z := centroD.z;
-        ELSE
-            centro.x := centroE.x;
-            centro.y := centroE.y;
-            centro.z := centroE.z;
+        IF prevDobreE AND  primVezE THEN
+            TPWrite "DOBRE ESQUERDAAAA";
+            centro.x := centro.x + (1/2)*pecaSize;
+            centroE.x := centroE.x + (1/2)*pecaSize;
+        ENDIF
+        
+        IF direcaoJogada AND primVezD THEN
+            centro.x := centro.x + (3/2)*pecaSize + desloc;
+            centro.y := centro.y + (3/2)*pecaSize + desloc;
+            centroD.x := centroD.x + (3/2)*pecaSize + desloc;
+            centroD.y := centroD.y + (3/2)*pecaSize + desloc;
+            primVezD := FALSE;
+        ENDIF
+        
+        IF (not direcaoJogada) AND primVezE THEN
+            centro.x := centro.x + (3/2)*pecaSize + desloc;
+            centro.y := centro.y - (3/2)*pecaSize - desloc;
+            centroE.x := centroE.x + (3/2)*pecaSize + desloc;
+            centroE.y := centroE.y - (3/2)*pecaSize - desloc;
+            primVezE := FALSE;
         ENDIF
         
         
-    ENDPROC
-     
+
+        TPWrite "PRIMVEZD = " \Bool:=primVezD;
+        TPWrite "PRIMVEZE = " \Bool:=primVezE;
+        WaitTime 1.0;
+        
+        
+        
+        
+        
+        
+    ENDPROC 
+    
     PROC desenhaRetangulo(bool vertical)
         VAR num matrizRotacao{10,3};
         VAR num i;
@@ -59,19 +130,15 @@ MODULE DESENHAR
         
     ENDPROC
     
-    PROC desenhaPontos(num n, num m, bool direcaoJogada)
-        !var bool pintaBolinha{9};
-        var bool horizontal;
-        horizontal:=(n<>m);
-
+    PROC desenhaPontos(num n, num m, bool direcaoJogada,bool vertical)
         !Percorre o vetor desenhaBolinha que informa quais bolinhas devem ser desenhadas
         FOR k FROM 1 TO 2 DO
             FOR j FROM 1 TO 3 DO 
                 FOR i FROM 1 TO 3 DO 
                     IF escolheBolinha(j+(i-1)*3,n) and k=1 THEN 
-                        desenhaBolinha Offs(pHome,centro.x,centro.y,centro.z),raio,horizontal,i,j,k;
+                        desenhaBolinha Offs(pHome,centro.x,centro.y,centro.z),raio,not vertical,i,j,k;
                     ELSEIF escolheBolinha(j+(i-1)*3,m) and k=2 THEN
-                        desenhaBolinha Offs(pHome,centro.x,centro.y,centro.z),raio,horizontal,i,j,k;
+                        desenhaBolinha Offs(pHome,centro.x,centro.y,centro.z),raio,not vertical,i,j,k;
                     ENDIF  
                 ENDFOR 
             ENDFOR
@@ -99,49 +166,81 @@ MODULE DESENHAR
          MoveL Offs(PCenter, 0,0,aproxZ), vel,zone,tool0;
     ENDPROC 
     
-    PROC offsCentro (bool vertical, bool direcaoJogada)
-
-        ! Parte do código que vai atualizar os centros
-        IF vertical THEN
-            IF centroD.y = centroE.y THEN
-                centroD.y := centroD.y -(3/2 * pecaSize) - desloc;
-                centroE.y := centroE.y + (3/2 * pecaSize) + desloc;
-            ELSE
-                IF direcaoJogada THEN
-                    centroD.y := centroD.y -(3/2 * pecaSize) - desloc;
-                ELSE
-                    centroE.y := centroE.y + (3/2 * pecaSize)+ desloc;
-                ENDIF
-            ENDIF
-            
-        ELSE
-            IF centroD.y = centroE.y THEN
-                centroD.y := centroD.y - (2  * pecaSize) - desloc;
-                centroE.y := centroE.y + (2  * pecaSize) + desloc;
-            ELSE
-                IF direcaoJogada THEN
-                    centroD.y := centroD.y - (2  * pecaSize) - desloc;
-                ELSE
-                    centroE.y := centroE.y + (2  * pecaSize) + desloc;
-                ENDIF
-            ENDIF
-        ENDIF
-        
-        centroD.x := 0; 
-        centroD.z := 0;
-        centroE.x := 0; 
-        centroE.z := 0;
-    
+    PROC offsCentro (bool vertical, bool direcaoJogada,bool virado)
+        IF (not virado) THEN
+            IF vertical THEN 
+                 IF centroD.y = centroE.y THEN 
+                    centroD.y := centroD.y - (3/2 * pecaSize) - desloc; 
+                    centroE.y := centroE.y + (3/2 * pecaSize) + desloc; 
+                ELSE 
+                     IF direcaoJogada THEN 
+                         centroD.y := centroD.y -(3/2 * pecaSize) - desloc; 
+                     ELSE 
+                         centroE.y := centroE.y + (3/2 * pecaSize)+ desloc; 
+                     ENDIF 
+                 ENDIF 
+                  
+             ELSE 
+                 IF centroD.y = centroE.y THEN 
+                     centroD.y := centroD.y - (2  * pecaSize) - desloc; 
+                     centroE.y := centroE.y + (2  * pecaSize) + desloc; 
+                 ELSE 
+                     IF direcaoJogada THEN 
+                         centroD.y := centroD.y - (2  * pecaSize) - desloc; 
+                     ELSE 
+                         centroE.y := centroE.y + (2  * pecaSize) + desloc; 
+                     ENDIF 
+                 ENDIF 
+             ENDIF
+        ELSE 
+            IF vertical THEN 
+                IF direcaoJogada THEN 
+                    centroD.x := centroD.x + (2 * pecaSize) + desloc; 
+                ELSE 
+                    centroE.x := centroE.x + (2 * pecaSize) + desloc; 
+                ENDIF     
+             ELSE 
+                IF direcaoJogada THEN 
+                    centroD.x := centroD.x + (3/2  * pecaSize) + desloc; 
+                ELSE 
+                    centroE.x := centroE.x + (3/2  * pecaSize) + desloc; 
+                ENDIF 
+             ENDIF
+        ENDIF 
+          
+          
+         centroD.z := 0; 
+         centroE.z := 0; 
     ENDPROC 
     
     PROC desenhaPeca(num n, num m, bool direcaoJogada)
+        VAR bool vertical:=FALSE; 
+        VAR bool virado;
+        VAR bool prevDobreD;
+        VAR bool prevDobreE;
         
-        !MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
-        centroOficial n=m, direcaoJogada;
-        desenhaRetangulo n=m;
-        desenhaPontos m,n, direcaoJogada;
-        offsCentro n=m, direcaoJogada;
-        !MoveL Offs(pHome,0,0,aproxZ), vel, zone, tool0;
+        virado:=centroOficial(n=m,direcaoJogada);
+        vertical:=naVertical(n=m,virado);
+        
+        IF virado THEN
+            offsCentroVira n=m,prevDobreD,prevDobreE;
+        ENDIF
+        
+        desenhaRetangulo vertical;
+        
+        IF virado AND (not direcaoJogada) THEN
+            desenhaPontos n,m,direcaoJogada,vertical;
+        ELSE 
+            desenhaPontos m,n,direcaoJogada,vertical;
+        ENDIF        
+        
+        offsCentro vertical, direcaoJogada,virado;
+        
+        IF direcaoJogada THEN
+            prevDobreD:=(n=m);
+        ELSE
+            prevDobreE:=(n=m);
+        ENDIF
     ENDPROC
     
 ENDMODULE
