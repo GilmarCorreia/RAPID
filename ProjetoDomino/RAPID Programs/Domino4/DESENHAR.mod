@@ -6,25 +6,18 @@ MODULE DESENHAR
     ! Gilmar Correia Jeronimo - R.A: 11014515
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
-
-    !CONST robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+  
     VAR num pecaSize := 25;
     VAR num raio:=2;
     VAR num aproxZ := 25;
     VAR zonedata zone := fine; 
-    VAR speeddata vel := v200;
+    VAR speeddata vel := v50;
     VAR num desloc := 2;
     VAR num maxLinha:=100;
     ! LOUSA 115 cm por 85cm
 
-    VAR pos centroD;
-    VAR pos centroE;
     VAR pos centro;
     VAR robtarget PCenter;
-    
-    VAR bool primVezD:=TRUE;
-    VAR bool primVezE:=TRUE;
-        
     
     FUNC bool centroOficial(bool dobre,bool direcaoJogada)
         
@@ -62,19 +55,14 @@ MODULE DESENHAR
         return virado XOR dobre;
     ENDFUNC 
     
-    PROC offsCentroVira(bool dobre,bool prevDobreD, bool prevDobreE)
-        
-        TPWrite "ESTÁ NA VERTICAL";
-        WaitTime 1.0;
+    PROC offsCentroVira(bool dobre)
         
         IF prevDobreD AND  primVezD THEN
-            TPWrite "DOBRE DIREITAAAA";
             centro.x := centro.x + (1/2)*pecaSize;
             centroD.x := centroD.x + (1/2)*pecaSize;
         ENDIF
         
         IF prevDobreE AND  primVezE THEN
-            TPWrite "DOBRE ESQUERDAAAA";
             centro.x := centro.x + (1/2)*pecaSize;
             centroE.x := centroE.x + (1/2)*pecaSize;
         ENDIF
@@ -95,16 +83,9 @@ MODULE DESENHAR
             primVezE := FALSE;
         ENDIF
         
-        
-
-        TPWrite "PRIMVEZD = " \Bool:=primVezD;
-        TPWrite "PRIMVEZE = " \Bool:=primVezE;
+        TPWrite "PRIMVEZD" \Bool:=primVezD;
+        TPWrite "PRIMVEZE" \Bool:=primVezE;
         WaitTime 1.0;
-        
-        
-        
-        
-        
         
     ENDPROC 
     
@@ -216,14 +197,12 @@ MODULE DESENHAR
     PROC desenhaPeca(num n, num m, bool direcaoJogada)
         VAR bool vertical:=FALSE; 
         VAR bool virado;
-        VAR bool prevDobreD;
-        VAR bool prevDobreE;
         
         virado:=centroOficial(n=m,direcaoJogada);
         vertical:=naVertical(n=m,virado);
         
         IF virado THEN
-            offsCentroVira n=m,prevDobreD,prevDobreE;
+            offsCentroVira n=m;
         ENDIF
         
         desenhaRetangulo vertical;

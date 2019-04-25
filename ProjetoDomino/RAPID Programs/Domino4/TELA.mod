@@ -6,32 +6,28 @@ MODULE TELA
     ! Gilmar Correia Jeronimo - R.A: 11014515
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
-    
+     
     CONST num qtdPecas:=28;
-    VAR num pecasJogadores{qtdPecas,2};
+  
+    VAR num tempoDelay:=0.5;
+     
     VAR num pecasJogador1{qtdPecas};
     VAR num pecasJogador2{qtdPecas};
-    VAR num pecasJogo{qtdPecas,2};
-    VAR num pecasCompra{qtdPecas,2};
-    VAR num pecasCompradas:=14;
-    VAR num maior:=-1;
+    VAR num pecasJogadores{qtdPecas,2};
 
     VAR bool quemJogaPrimeiro;
     VAR num escolhaPlayer{2};
     VAR num qtdPecasPlayer{2};
     VAR num pecasNaMao{2};
+    VAR num pontosNaMao{2};
     VAR num player;
     VAR num vaiEscolherNovamente;
     VAR bool vaiComprar;
-    VAR bool direcaoJogada;
-    !Se for true, jogou na direita, se for false, jogou na esquerda.
-
-    VAR num tempoDelay:=0.5;
-
+    VAR bool direcaoJogada; !Se for true, jogou na direita, se for false, jogou na esquerda.
+    
     VAR num pecaD;
     VAR num pecaE;
 
-    LOCAL VAR loadsession load2;
     !! =======================================================================================================================
     !!                                              FUNÇÃO DE RANDOM - TIRADO DO SITE ()
     !! =======================================================================================================================
@@ -175,8 +171,8 @@ MODULE TELA
             ELSE
                 ! CÓDIGO PARA O COMPUTADOR
                 TPWrite "Vez do Computador";
-                imprimePecas player,qtdPecasPlayer{player},1.0;
-                WaitTime 0.5;
+                !imprimePecas player,qtdPecasPlayer{player},1.0;
+                !WaitTime 0.5;
             ENDIF
             
             !SE NÃO POSSUIR PEÇAS QUE POSSAM SER ESCOLHIDAS ENTÃO SE SELECIONA UMA PEÇA AUTOMATICAMENTE ERRADA, E ASSIM SE REALIZA A COMPRA DA PEÇA
@@ -268,15 +264,15 @@ MODULE TELA
         IF vaiComprar<>TRUE THEN
             IF direcaoJogada THEN
                 IF pecasJogo{pecasJogadores{escolhaPlayer{player},player},1}=pecaD THEN
-                    %"desenhaPeca"%pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},direcaoJogada;
+                    %"desenhaPeca"% pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},direcaoJogada;
                 ELSE
-                    %"desenhaPeca"%pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},direcaoJogada;
+                    %"desenhaPeca"% pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},direcaoJogada;
                 ENDIF
             ELSE
                 IF pecasJogo{pecasJogadores{escolhaPlayer{player},player},2}=pecaE THEN
-                    %"desenhaPeca"%pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},direcaoJogada;
+                    %"desenhaPeca"% pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},direcaoJogada;
                 ELSE
-                    %"desenhaPeca"%pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},direcaoJogada;
+                    %"desenhaPeca"% pecasJogo{pecasJogadores{escolhaPlayer{player},player},2},pecasJogo{pecasJogadores{escolhaPlayer{player},player},1},direcaoJogada;
                 ENDIF
             ENDIF
             pecasCompra{pecasJogadores{escolhaPlayer{player},player},1}:=-2;
@@ -294,8 +290,10 @@ MODULE TELA
 
         VAR num partida:=0;
         VAR num j:=0;
+        VAR bool quemJogaPrimeiro;
 
         pecasNaMao:=[7,7];
+        pontosNaMao:=[0,0];
 
         ! Define a variável para verificar que joga primeiro, ou seja, o jogador que tem a maior peça
         escolhaPlayer:=[100,100];
@@ -353,14 +351,10 @@ MODULE TELA
 
         quemJogaPrimeiro:=quemJogaPrimeiro XOR TRUE;
 
-        !Carrega classe de desenho
-        !StartLoad\Dynamic,diskhome\File:="DESENHAR.MOD",load2;
-        !WaitLoad load2;
-
         pecaD:=pecasJogo{maior,1};
         pecaE:=pecasJogo{maior,2};
 
-        %"desenhaPeca"%pecaD,pecaE,TRUE;
+        %"desenhaPeca"% pecaD,pecaE,TRUE;
 
         !Loop de jogo até o fim da partida
         ! Se o jogador que baixou a primeira peça for o computador, quemJogaPrimeiro será TRUE e então será a vez do player 1
@@ -375,7 +369,7 @@ MODULE TELA
             j:=0;
         ENDFOR
         
-        WHILE ((pecasNaMao{1}>0) AND (pecasNaMao{2}>0)) DO
+        WHILE ((pecasNaMao{1}>0) AND (pecasNaMao{2}>0)) AND (not empate) DO
             TPErase;
             TPWrite ""; 
             TPWrite "====================================";
@@ -399,12 +393,25 @@ MODULE TELA
             !SE TODAS AS MINHAS PEÇAS FOREM COMPRADAS, ENTÃO O O SISTEMA ...
             !SE AINDA HOUVER PEÇAS PARA COMPRAR ENTÃO É ANALISADO QUANTAS PEÇAS EXISTEM NA MÃO DE CADA JOGADOR;
             IF pecasCompradas = 28 THEN
-                TPWrite "JOGO TRAVADO PELO JOGADOR "+NumToStr(player,0);
-                IF player = 1 THEN
+                TPWrite "TODAS AS PEÇAS COMPRADAS. Último jogador a comprar: "+NumToStr(player,0);
+                TPWrite "Contando pontos na mão de cada jogador...";
+                WaitTime 2.5;
+                FOR jogadores FROM 1 TO 2 DO
+                    FOR i FROM 1 TO qtdPecasPlayer{jogadores} DO
+                        IF pecasCompra{pecasJogadores{i,jogadores},1}<>-2 THEN
+                            pontosNaMao{jogadores} := pontosNaMao{jogadores} + pecasJogo{pecasJogadores{i,jogadores},1} + pecasJogo{pecasJogadores{i,jogadores},2};
+                        ENDIF
+                    ENDFOR
+                ENDFOR
+
+                IF pontosNaMao{1} > pontosNaMao{2} THEN
                     pecasNaMao{2} :=0;
-                ELSE
+                ELSEIF pontosNaMao{1} < pontosNaMao{2} THEN
                     pecasNaMao{1} :=0;
+                ELSE
+                    empate := TRUE;
                 ENDIF
+                
             ELSE    
                 FOR i FROM 1 TO qtdPecasPlayer{player} DO
                     IF pecasCompra{pecasJogadores{i,player},1}=-2 THEN
@@ -423,11 +430,16 @@ MODULE TELA
 
         IF pecasNaMao{1}=0 THEN
             TPWrite "Parabéns! Você é o vencedor!";
+            vencedor :=1;
         ELSEIF pecasNaMao{2}=0 THEN
             TPWrite "YOU LOSE! FATALITY! Computador ganhou!";
+            vencedor :=2;
+        ELSEIF empate THEN
+            TPWrite "EMPATE!";
         ENDIF
 
-        WaitTime 5.0;
+        WaitTime 2.0;
+        
 
     ENDPROC
 ENDMODULE
