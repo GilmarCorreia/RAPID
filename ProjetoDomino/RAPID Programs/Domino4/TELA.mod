@@ -6,7 +6,7 @@ MODULE TELA
     ! Gilmar Correia Jeronimo - R.A: 11014515
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
-     
+      
     CONST num qtdPecas:=28;
   
     VAR num tempoDelay:=0.5;

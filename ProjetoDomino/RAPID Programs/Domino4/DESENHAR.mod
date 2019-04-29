@@ -6,14 +6,14 @@ MODULE DESENHAR
     ! Gilmar Correia Jeronimo - R.A: 11014515
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
-  
+   
     VAR num pecaSize := 25;
     VAR num raio:=2;
     VAR num aproxZ := 25;
     VAR zonedata zone := fine; 
-    VAR speeddata vel := v50;
+    VAR speeddata vel := v2000;
     VAR num desloc := 2;
-    VAR num maxLinha:=100;
+    VAR num maxLinha:=250;
     ! LOUSA 115 cm por 85cm
 
     VAR pos centro;
@@ -82,10 +82,6 @@ MODULE DESENHAR
             centroE.y := centroE.y - (3/2)*pecaSize - desloc;
             primVezE := FALSE;
         ENDIF
-        
-        TPWrite "PRIMVEZD" \Bool:=primVezD;
-        TPWrite "PRIMVEZE" \Bool:=primVezE;
-        WaitTime 1.0;
         
     ENDPROC 
     

@@ -1,5 +1,5 @@
 MODULE Module1
-     
+      
     ! ================== INTEGRANTES ==================
     ! Nomes:
     ! Ana Laura Belotto Claudio - R.A: 11035315
@@ -7,7 +7,7 @@ MODULE Module1
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
      
-    PERS robtarget pHome:=[[807.94,22.13,849.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
+    PERS robtarget pHome:=[[807.94,22.13,949.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
     
     VAR num novamente := 1;
     VAR num vencedor:=0;
@@ -22,9 +22,9 @@ MODULE Module1
     
     VAR pos centroD;
     VAR pos centroE;
-    PERS bool primVezD:=FALSE;
+    PERS bool primVezD:=TRUE;
     PERS bool primVezE:=TRUE;
-    PERS bool prevDobreD := FALSE;
+    PERS bool prevDobreD := TRUE;
     PERS bool prevDobreE := FALSE;
     
     
