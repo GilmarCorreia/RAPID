@@ -29,7 +29,7 @@ MODULE TELA
     VAR num pecaE;
 
     !! =======================================================================================================================
-    !!                                              FUNÇÃO DE RANDOM - TIRADO DO SITE ()
+    !!         FUNÇÃO DE RANDOM - TIRADO DO SITE (https://forums.robotstudio.com/discussion/3742/random-value-needed)
     !! =======================================================================================================================
 
     LOCAL VAR num nSeed:=320;
@@ -290,12 +290,14 @@ MODULE TELA
 
         VAR num partida:=0;
         VAR num j:=0;
+        
+        ! Define a variável para verificar que joga primeiro, ou seja, o jogador que tem a maior peça
         VAR bool quemJogaPrimeiro;
 
         pecasNaMao:=[7,7];
         pontosNaMao:=[0,0];
 
-        ! Define a variável para verificar que joga primeiro, ou seja, o jogador que tem a maior peça
+
         escolhaPlayer:=[100,100];
         qtdPecasPlayer:=[7,7];
 
@@ -333,7 +335,6 @@ MODULE TELA
         ! Verifica quem possui a maior peça
         TPWrite " ";
         TPWrite "Verificando quem possui a peça maior (6/6 - 5/6 - 5/5 - 4/6 - ...)";
-        !<- ARRUMAR ISSO DEPOIS
         TPWrite " ";
         WaitTime tempoDelay;
 
@@ -390,7 +391,7 @@ MODULE TELA
             !Troca o jogador
             quemJogaPrimeiro:=quemJogaPrimeiro XOR TRUE;
 
-            !SE TODAS AS MINHAS PEÇAS FOREM COMPRADAS, ENTÃO O O SISTEMA ...
+            !SE TODAS AS MINHAS PEÇAS FOREM COMPRADAS, ENTÃO O O SISTEMA REALIZA A SOMA DOS PONTOS DA MÃO DE CADA JOGADOR
             !SE AINDA HOUVER PEÇAS PARA COMPRAR ENTÃO É ANALISADO QUANTAS PEÇAS EXISTEM NA MÃO DE CADA JOGADOR;
             IF pecasCompradas = 28 THEN
                 TPWrite "TODAS AS PEÇAS COMPRADAS. Último jogador a comprar: "+NumToStr(player,0);
@@ -423,8 +424,6 @@ MODULE TELA
             ENDIF
             
         ENDWHILE
-
-        !UnLoad diskhome\File:="DESENHAR.MOD";
 
         WaitTime tempoDelay;
 

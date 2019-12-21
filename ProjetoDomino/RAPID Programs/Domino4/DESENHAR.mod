@@ -7,16 +7,16 @@ MODULE DESENHAR
     ! Lucas Barboza Moreira Pinheiro - R.A: 11017015
     ! =================================================
    
-    VAR num pecaSize := 25;
-    VAR num raio:=2;
-    VAR num aproxZ := 25;
+    VAR num pecaSize := 25; ! metade do tamanho da peça
+    VAR num raio:=2; ! raio do robô para o circulos internos
+    VAR num aproxZ := 25; !altura de subida do manipulador
     VAR zonedata zone := fine; 
-    VAR speeddata vel := v2000;
-    VAR num desloc := 2;
-    VAR num maxLinha:=250;
+    VAR speeddata vel := v2000; 
+    VAR num desloc := 2; !Variável que seta a distancia entre duas peças desenhadas
+    VAR num maxLinha:=250; !distância máxima para se avançar para direita, ou para esquerda.
     ! LOUSA 115 cm por 85cm
 
-    VAR pos centro;
+    VAR pos centro; 
     VAR robtarget PCenter;
     
     FUNC bool centroOficial(bool dobre,bool direcaoJogada)

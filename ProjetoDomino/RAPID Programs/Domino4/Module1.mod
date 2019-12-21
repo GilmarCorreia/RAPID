@@ -9,23 +9,23 @@ MODULE Module1
      
     PERS robtarget pHome:=[[807.94,22.13,949.61],[2.82776E-8,-0.236102,-0.971728,7.69646E-9],[0,0,0,0],[9E+9,9E+9,9E+9,9E+9,9E+9,9E+9]];
     
-    VAR num novamente := 1;
-    VAR num vencedor:=0;
-    VAR num vitoriasPlayer1:=0;
-    VAR num vitoriasPlayer2:=0;
+    VAR num novamente := 1; !Variável que verifica se será jogado novamente, se for = 1, o while continua executando
+    VAR num vencedor:=0; !Verifica  jogador vencedor
+    VAR num vitoriasPlayer1:=0; !Contabiliza as vitórias do player1
+    VAR num vitoriasPlayer2:=0; !Contabiliza as vitórias do player2
     
-    VAR num pecasJogo{qtdPecas,2};
-    VAR num pecasCompra{qtdPecas,2};
-    VAR num pecasCompradas:=14;
-    VAR num maior:=-1;
-    VAR bool empate := FALSE;    
+    VAR num pecasJogo{qtdPecas,2}; !Array que guarda as peças do jogo
+    VAR num pecasCompra{qtdPecas,2}; !Array que guarda as peças compradas
+    VAR num pecasCompradas:=14; !Define a quantidade de peças compradas
+    VAR num maior:=-1; !Inicializa para achar o maior
+    VAR bool empate := FALSE; !Se for empate, não conta vitória para nenhum dos jogadores
     
-    VAR pos centroD;
-    VAR pos centroE;
-    PERS bool primVezD:=TRUE;
-    PERS bool primVezE:=TRUE;
-    PERS bool prevDobreD := TRUE;
-    PERS bool prevDobreE := FALSE;
+    VAR pos centroD; !Variável que atualiza o centro da extrema direita do jogo
+    VAR pos centroE; !Variável que atualiza o centro da extrema esquerda do jogo
+    PERS bool primVezD:=FALSE; !Variável que define se o jogo virou para a vertical na extremidade direita
+    PERS bool primVezE:=FALSE; !Variável que define se o jogo virou para a vertical na extremidade esquerda
+    PERS bool prevDobreD := FALSE; !Variável que guarda se a peça anterior da direita foi dobre 
+    PERS bool prevDobreE := FALSE; !Variável que guarda se a peça anterior da esquerda foi dobre
     
     
     PROC main()
@@ -51,6 +51,8 @@ MODULE Module1
         WaitTime 2.0;
     ENDPROC
     
+    
+    !Limpa as variáveis para iniciar um novo jogo
     PROC clear()
         pecasCompra := pecasJogo;
         centroD.x:=0;
